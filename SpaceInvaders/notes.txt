@@ -1,0 +1,6 @@
+﻿Successfully implemented all requirements.
+
+Known bugs:
+	- If all of the level 3 enemies are killed before all of the level 1 and 2 enemies, the program crashes.
+	- There is a delay between when a bullet is removed from the screen (either because it hit an enemy or it went
+		offscreen) and when the system will allow the player to fire again.
