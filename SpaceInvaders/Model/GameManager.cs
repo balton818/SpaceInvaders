@@ -26,6 +26,7 @@ namespace SpaceInvaders.Model
         private int enemyMoveCounter;
 
         private PlayerShip playerShip;
+        private Canvas background;
 
         #endregion
 
@@ -102,20 +103,21 @@ namespace SpaceInvaders.Model
             {
                 throw new ArgumentNullException(nameof(background));
             }
+            this.background = background;
 
-            this.createAndPlacePlayerShip(background);
+            this.createAndPlacePlayerShip();
 
-            this.createLevel1Enemies(background);
-            this.createLevel2Enemies(background);
-            this.createLevel3Enemies(background);
+            this.createLevel1Enemies();
+            this.createLevel2Enemies();
+            this.createLevel3Enemies();
 
             this.placeAllEnemies();
         }
 
-        private void createAndPlacePlayerShip(Canvas background)
+        private void createAndPlacePlayerShip()
         {
             this.playerShip = new PlayerShip();
-            background.Children.Add(this.playerShip.Sprite);
+            this.background.Children.Add(this.playerShip.Sprite);
 
             this.placePlayerShipNearBottomOfBackgroundCentered();
         }
@@ -126,32 +128,32 @@ namespace SpaceInvaders.Model
             this.playerShip.Y = this.backgroundHeight - this.playerShip.Height - PlayerShipBottomOffset;
         }
 
-        private void createLevel1Enemies(Canvas background)
+        private void createLevel1Enemies()
         {
             for (var index = 0; index < NumberOfLevel1Enemies; index++)
             {
                 EnemyShip enemy = new EnemyShip1();
-                background.Children.Add(enemy.Sprite);
+                this.background.Children.Add(enemy.Sprite);
                 this.Enemies.Add(enemy);
             }
         }
 
-        private void createLevel2Enemies(Canvas background)
+        private void createLevel2Enemies()
         {
             for (var index = 0; index < NumberOfLevel2Enemies; index++)
             {
                 EnemyShip enemy = new EnemyShip2();
-                background.Children.Add(enemy.Sprite);
+                this.background.Children.Add(enemy.Sprite);
                 this.Enemies.Add(enemy);
             }
         }
 
-        private void createLevel3Enemies(Canvas background)
+        private void createLevel3Enemies()
         {
             for (var index = 0; index < NumberOfLevel3Enemies; index++)
             {
                 EnemyShip enemy = new EnemyShip3();
-                background.Children.Add(enemy.Sprite);
+                this.background.Children.Add(enemy.Sprite);
                 this.Enemies.Add(enemy);
             }
         }
@@ -247,12 +249,12 @@ namespace SpaceInvaders.Model
 
         /// <summary>Fires the bullet if one has not already been fired.</summary>
         /// <param name="background">The background.</param>
-        public void FireBullet(Canvas background)
+        public void FireBullet()
         {
             if (this.playerShip.CanFire())
             {
                 var bullet = this.playerShip.FireBullet();
-                this.createPlayerBullet(background, bullet);
+                this.createPlayerBullet(bullet);
                 this.PlayerBullet = bullet;
                 this.placePlayerBullet(bullet);
             }
@@ -271,9 +273,9 @@ namespace SpaceInvaders.Model
             bullet.Y = y;
         }
 
-        private void createPlayerBullet(Canvas background, PlayerBullet bullet)
+        private void createPlayerBullet(PlayerBullet bullet)
         {
-            background.Children.Add(bullet.Sprite);
+            this.background.Children.Add(bullet.Sprite);
         }
 
         /// <summary>Moves all player bullets.</summary>
@@ -344,7 +346,7 @@ namespace SpaceInvaders.Model
                 var bullet = enemy.FireBullet();
                 this.EnemyBullets.Add(bullet);
                 this.placeEnemyBullet(bullet, enemy);
-                this.showEnemyBullet(bullet, background);
+                this.showEnemyBullet(bullet);
             }
         }
 
@@ -367,9 +369,9 @@ namespace SpaceInvaders.Model
             return (EnemyShip3) randomEnemy;
         }
 
-        private void showEnemyBullet(EnemyBullet bullet, Canvas background)
+        private void showEnemyBullet(EnemyBullet bullet)
         {
-            background.Children.Add(bullet.Sprite);
+            this.background.Children.Add(bullet.Sprite);
         }
 
         private bool randomShotFired()
