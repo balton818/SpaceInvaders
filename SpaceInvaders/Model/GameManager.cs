@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace SpaceInvaders.Model
@@ -10,6 +10,12 @@ namespace SpaceInvaders.Model
     /// </summary>
     public class GameManager
     {
+        #region Types and Delegates
+
+        public delegate void PlayerDeathHandler(bool gameOver);
+
+        #endregion
+
         #region Data members
 
         private const double PlayerShipBottomOffset = 30;
@@ -18,6 +24,10 @@ namespace SpaceInvaders.Model
         private const int NumberOfLevel1Enemies = 4;
         private const int NumberOfLevel2Enemies = 4;
         private const int NumberOfLevel3Enemies = 4;
+
+        private readonly EnemyFleetManager enemyFleetManager;
+
+        private DispatcherTimer gameTimer;
 
         private readonly double backgroundHeight;
         private readonly double backgroundWidth;
@@ -32,10 +42,6 @@ namespace SpaceInvaders.Model
 
         #region Properties
 
-        /// <summary>Gets the enemies currently in play.</summary>
-        /// <value>The enemies.</value>
-        public IList<EnemyShip> Enemies { get; }
-
         /// <summary>Gets the player bullets currently in play.</summary>
         /// <value>The player bullets.</value>
         public PlayerBullet PlayerBullet { get; set; }
@@ -49,10 +55,6 @@ namespace SpaceInvaders.Model
         /// </summary>
         /// <value>The score.</value>
         public int Score { get; set; }
-
-        public delegate void PlayerDeathHandler(bool gameOver);
-
-        public event PlayerDeathHandler GameOver;
 
         #endregion
 
@@ -76,7 +78,8 @@ namespace SpaceInvaders.Model
                 throw new ArgumentOutOfRangeException(nameof(backgroundWidth));
             }
 
-            this.Enemies = new List<EnemyShip>();
+            this.enemyFleetManager = new EnemyFleetManager();
+
             this.EnemyBullets = new List<EnemyBullet>();
 
             this.movingLeft = true;
@@ -91,6 +94,8 @@ namespace SpaceInvaders.Model
 
         #region Methods
 
+        public event PlayerDeathHandler GameOver;
+
         /// <summary>
         ///     Initializes the game placing player ship and enemy ship in the game.
         ///     Precondition: background != null
@@ -99,19 +104,30 @@ namespace SpaceInvaders.Model
         /// <param name="background">The background canvas.</param>
         public void InitializeGame(Canvas background)
         {
-            if (background == null)
-            {
-                throw new ArgumentNullException(nameof(background));
-            }
-            this.background = background;
+            this.background = background ?? throw new ArgumentNullException(nameof(background));
+
+            this.gameTimer = new DispatcherTimer();
+            this.gameTimer.Tick += this.timerTick;
+            this.gameTimer.Interval = new TimeSpan(0, 0, 0, 0, 20);
+            this.gameTimer.Start();
 
             this.createAndPlacePlayerShip();
 
-            this.createLevel1Enemies();
-            this.createLevel2Enemies();
-            this.createLevel3Enemies();
-
             this.placeAllEnemies();
+            this.showAllEnemies();
+        }
+
+        private void timerTick(object sender, object e)
+        {
+            this.enemyFleetManager.MoveEnemies();
+            this.enemyFleetManager.EnemiesShoot();
+            this.enemyFleetManager.RemoveOffScreenEnemyBulletsBullets(this.backgroundHeight);
+            //this.playerBulletManager.MoveBullets();
+            this.MoveAllPlayerBullets();
+            this.playerShip.RemoveOffScreenPlayerBullets();
+            //this.enemyBulletManager.MoveBullets();
+            //this.updateScore();
+            //this.checkIfGameOver();
         }
 
         private void createAndPlacePlayerShip()
@@ -128,64 +144,34 @@ namespace SpaceInvaders.Model
             this.playerShip.Y = this.backgroundHeight - this.playerShip.Height - PlayerShipBottomOffset;
         }
 
-        private void createLevel1Enemies()
-        {
-            for (var index = 0; index < NumberOfLevel1Enemies; index++)
-            {
-                EnemyShip enemy = new EnemyShip1();
-                this.background.Children.Add(enemy.Sprite);
-                this.Enemies.Add(enemy);
-            }
-        }
-
-        private void createLevel2Enemies()
-        {
-            for (var index = 0; index < NumberOfLevel2Enemies; index++)
-            {
-                EnemyShip enemy = new EnemyShip2();
-                this.background.Children.Add(enemy.Sprite);
-                this.Enemies.Add(enemy);
-            }
-        }
-
-        private void createLevel3Enemies()
-        {
-            for (var index = 0; index < NumberOfLevel3Enemies; index++)
-            {
-                EnemyShip enemy = new EnemyShip3();
-                this.background.Children.Add(enemy.Sprite);
-                this.Enemies.Add(enemy);
-            }
-        }
-
         private void placeAllEnemies()
         {
             var enemy1Counter = 0;
             var enemy2Counter = 0;
             var enemy3Counter = 0;
 
-            foreach (var enemy in this.Enemies)
+            foreach (var enemy in this.enemyFleetManager.EnemyShips)
             {
                 var type = enemy.GetType();
                 var centerOffset = enemy.Width;
 
                 if (type == typeof(EnemyShip1))
                 {
-                    centerOffset = centerOffset * NumberOfLevel1Enemies / 2;
+                    centerOffset = centerOffset * EnemyFleetManager.NumberOfLevel1Enemies / 2;
                     enemy.X = this.backgroundWidth / 2 + enemy.Width * enemy1Counter - centerOffset;
                     enemy.Y = EnemyShipTopOffset * 3;
                     enemy1Counter++;
                 }
                 else if (type == typeof(EnemyShip2))
                 {
-                    centerOffset = centerOffset * NumberOfLevel2Enemies / 2;
+                    centerOffset = centerOffset * EnemyFleetManager.NumberOfLevel2Enemies / 2;
                     enemy.X = this.backgroundWidth / 2 + enemy.Width * enemy2Counter - centerOffset;
                     enemy.Y = EnemyShipTopOffset * 2;
                     enemy2Counter++;
                 }
                 else if (type == typeof(EnemyShip3))
                 {
-                    centerOffset = centerOffset * NumberOfLevel3Enemies / 2;
+                    centerOffset = centerOffset * EnemyFleetManager.NumberOfLevel3Enemies / 2;
                     enemy.X = this.backgroundWidth / 2 + enemy.Width * enemy3Counter - centerOffset;
                     enemy.Y = EnemyShipTopOffset;
                     enemy3Counter++;
@@ -193,31 +179,11 @@ namespace SpaceInvaders.Model
             }
         }
 
-        /// <summary>
-        ///     Moves all enemies and changes movement direction if necessary.
-        ///     Precondition: none
-        ///     Postcondition: all enemies moved to the left or right
-        /// </summary>
-        public void MoveAllEnemies()
+        private void showAllEnemies()
         {
-            foreach (var enemy in this.Enemies)
+            foreach (var enemy in this.enemyFleetManager.EnemyShips)
             {
-                if (this.movingLeft)
-                {
-                    enemy.MoveLeft();
-                }
-                else
-                {
-                    enemy.MoveRight();
-                }
-            }
-
-            this.enemyMoveCounter++;
-
-            if (this.enemyMoveCounter == 20)
-            {
-                this.movingLeft = !this.movingLeft;
-                this.enemyMoveCounter = 0;
+                this.background.Children.Add(enemy.Sprite);
             }
         }
 
@@ -254,13 +220,9 @@ namespace SpaceInvaders.Model
             if (this.playerShip.CanFire())
             {
                 var bullet = this.playerShip.FireBullet();
+                this.placePlayerBullet(bullet);
                 this.createPlayerBullet(bullet);
                 this.PlayerBullet = bullet;
-                this.placePlayerBullet(bullet);
-            }
-            else
-            {
-                this.removePlayerBullet();
             }
         }
 
@@ -287,25 +249,15 @@ namespace SpaceInvaders.Model
             }
         }
 
-        private void removePlayerBullet()
-        {
-            var bullet = this.playerShip.PlayerBullets[0];
-            if (this.playerShip.PlayerBullets[0].Y <= 0)
-            {
-                this.playerShip.PlayerBullets.Remove(bullet);
-            }
-        }
-
         /// <summary>Detects the player hits and increases the score as necessary.</summary>
         /// <returns> the EnemyShip if the PlayerShip hit one; null otherwise </returns>
         public EnemyShip DetectPlayerHitsAndIncreaseScore()
         {
-            foreach (var enemy in this.Enemies)
+            foreach (var enemy in this.enemyFleetManager.EnemyShips)
             {
-                if (this.playerShip.HitEnemy(enemy))
+                if (this.playerShip.DetermineIfEnemyWasHit(enemy))
                 {
-                    this.Enemies.Remove(enemy);
-                    this.removePlayerBullet();
+                    this.enemyFleetManager.EnemyShips.Remove(enemy);
                     this.determineScore(enemy);
                     return enemy;
                 }
@@ -319,67 +271,9 @@ namespace SpaceInvaders.Model
             this.Score += enemy.PointValue;
         }
 
-        /// <summary>Determines if player was hit by an enemy ship</summary>
-        /// <returns>true if the player was hit; false otherwise</returns>
-        public bool DetermineIfPlayerWasHit()
-        {
-            foreach (var enemy in this.Enemies)
-            {
-                var type = enemy.GetType();
-                if (type == typeof(EnemyShip3) && ((EnemyShip3) enemy).HitPlayerShip(this.playerShip))
-                {
-                    this.onGameOver();
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>Enables the enemies to fire randomly</summary>
-        /// <param name="background">The background.</param>
-        public void EnemiesShoot(Canvas background)
-        {
-            if (this.randomShotFired())
-            {
-                var enemy = this.pickRandomEnemy();
-                var bullet = enemy.FireBullet();
-                this.EnemyBullets.Add(bullet);
-                this.placeEnemyBullet(bullet, enemy);
-                this.showEnemyBullet(bullet);
-            }
-        }
-
-        private void placeEnemyBullet(EnemyBullet bullet, EnemyShip3 enemy)
-        {
-            var x = enemy.X + enemy.Width / 2 - bullet.Width / 2;
-            var y = enemy.Y + enemy.Height;
-
-            bullet.X = x;
-            bullet.Y = y;
-        }
-
-        private EnemyShip3 pickRandomEnemy()
-        {
-            var random = new Random();
-            var level3Enemies = from enemy in this.Enemies where enemy.GetType() == typeof(EnemyShip3) select enemy;
-            var index = random.Next(level3Enemies.Count());
-            var randomEnemy = level3Enemies.ToList()[index];
-            
-            return (EnemyShip3) randomEnemy;
-        }
-
         private void showEnemyBullet(EnemyBullet bullet)
         {
             this.background.Children.Add(bullet.Sprite);
-        }
-
-        private bool randomShotFired()
-        {
-            var random = new Random();
-            var value = random.Next(200);
-
-            return value > 20 && value < 35;
         }
 
         /// <summary>Moves all enemy bullets.</summary>

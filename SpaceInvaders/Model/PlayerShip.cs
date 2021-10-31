@@ -14,6 +14,7 @@ namespace SpaceInvaders.Model
 
         private const int SpeedXDirection = 20;
         private const int SpeedYDirection = 0;
+        private int bulletsOnScreen;
 
         #endregion
 
@@ -35,6 +36,7 @@ namespace SpaceInvaders.Model
             Sprite = new PlayerShipSprite();
             SetSpeed(SpeedXDirection, SpeedYDirection);
             this.PlayerBullets = new List<PlayerBullet>(1);
+            this.bulletsOnScreen = 0;
         }
 
         #endregion
@@ -64,18 +66,20 @@ namespace SpaceInvaders.Model
         /// <param name="enemy">The enemy.</param>
         /// <returns>true if the enemy was hit; false otherwise</returns>
         /// <exception cref="System.ArgumentException">Enemy object cannot be null</exception>
-        public bool HitEnemy(EnemyShip enemy)
+        public bool DetermineIfEnemyWasHit(EnemyShip enemy)
         {
             if (enemy == null)
             {
                 throw new ArgumentException("Enemy object cannot be null");
             }
 
-            if (this.PlayerBullets.Count > 0)
+            foreach (var bullet in this.PlayerBullets)
             {
-                var bullet = this.PlayerBullets[0];
-
-                return CollisionDetector.CollisionHasOccurred(enemy, bullet);
+                if (CollisionDetector.CollisionHasOccurred(enemy, bullet))
+                {
+                    this.PlayerBullets.Remove(bullet);
+                    return true;
+                }
             }
 
             return false;
@@ -87,18 +91,56 @@ namespace SpaceInvaders.Model
         /// </returns>
         public bool CanFire()
         {
-            return this.PlayerBullets.Count == 0;
+            return (this.bulletsOnScreen < 3 && this.checkProperBulletSpacing());
+        }
+
+        private bool checkProperBulletSpacing()
+        {
+            if (this.bulletsOnScreen > 0)
+            {
+                double spacing = this.PlayerBullets[this.bulletsOnScreen - 1].Y;
+                return (this.Y - spacing) > this.PlayerBullets[0].Height;
+            }
+
+            return true;
+
         }
 
         /// <summary>Fires the bullet.</summary>
         /// <returns>the bullet that was fired</returns>
         public PlayerBullet FireBullet()
         {
-            this.PlayerBullets.Clear();
             var bullet = new PlayerBullet();
             this.PlayerBullets.Add(bullet);
+            this.bulletsOnScreen++;
             return bullet;
         }
+
+        public void RemoveOffScreenPlayerBullets()
+        {
+            foreach (var bullet in this.findOffscreenBullets())
+            {
+                this.bulletsOnScreen--;
+                this.PlayerBullets.Remove(bullet);
+            }
+        }
+
+        private IList<PlayerBullet> findOffscreenBullets()
+        {
+            var bulletsToRemove = new List<PlayerBullet>();
+
+            foreach (var bullet in this.PlayerBullets)
+            {
+                if (bullet.Y <= 0)
+                {
+                    bulletsToRemove.Add(bullet);
+                }
+            }
+
+            return bulletsToRemove;
+        }
+
+
 
         #endregion
     }
