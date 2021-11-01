@@ -12,9 +12,9 @@
     Width="50">
 
     <Canvas>
-        <local:Level3EnemyShipSprite></local:Level3EnemyShipSprite>
-        <Ellipse Height="4" Width="4" Canvas.Left="5.5" Canvas.Top="45.5" Fill="DarkOrchid" Opacity=".5"/>
-        <Ellipse Height="4" Width="4" Canvas.Left="23" Canvas.Top="38.5" Fill="DarkOrchid" Opacity=".5"/>
-        <Ellipse Height="4" Width="4" Canvas.Left="40.5" Canvas.Top="45.5" Fill="DarkOrchid" Opacity=".5"/>
+        <local:Level3EnemyShipSprite/>
+        <Ellipse Height="4" Width="4" Canvas.Left="5.5" Canvas.Top="45.5" Fill="DarkOrchid" />
+        <Ellipse Height="4" Width="4" Canvas.Left="23" Canvas.Top="38.5" Fill="DarkOrchid" />
+        <Ellipse Height="4" Width="4" Canvas.Left="40.5" Canvas.Top="45.5" Fill="DarkOrchid" />
     </Canvas>
 </local:BaseSprite>

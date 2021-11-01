@@ -8,10 +8,10 @@ namespace SpaceInvaders.Model
     {
         #region Data members
 
-        public const int NumberOfLevel1Enemies = 4;
+        public const int NumberOfLevel1Enemies = 2;
         public const int NumberOfLevel2Enemies = 4;
-        public const int NumberOfLevel3Enemies = 4;
-        public const int NumberOfLevel4Enemies = 4;
+        public const int NumberOfLevel3Enemies = 6;
+        public const int NumberOfLevel4Enemies = 8;
 
         private const int numberOfEnemySteps = 20;
 

@@ -26,7 +26,7 @@ namespace SpaceInvaders.Model
         private const int Row1YPosition = 25;
         private const int Row2YPosition = 75;
         private const int Row3YPosition = 125;
-        private const int Row4YPosition = 185;
+        private const int Row4YPosition = 175;
 
         private const int NumberOfLevel1Enemies = 4;
         private const int NumberOfLevel2Enemies = 4;

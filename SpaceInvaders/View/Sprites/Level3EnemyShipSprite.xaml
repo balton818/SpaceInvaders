@@ -10,12 +10,7 @@
     d:DesignWidth="50"
     Height="50"
     Width="50">
-
-    <UserControl.Resources>
-        <SolidColorBrush x:Key="EnemyShipColor" Color="Gray"/>
-        <SolidColorBrush x:Key="EnemyShipOutline" Color="Black"/>
-    </UserControl.Resources>
-
+    
     <Canvas>
         <local:Level2EnemySprite></local:Level2EnemySprite>
 
