@@ -88,10 +88,9 @@ namespace SpaceInvaders.Model
 
         public bool DetermineIfPlayerWasHit(PlayerShip player)
         {
-            foreach (var enemy in this.EnemyShips)
+            foreach (var bullet in this.EnemyBullets)
             {
-                var type = enemy.GetType();
-                if (type == typeof(EnemyShip3) && ((EnemyShip3) enemy).HitPlayerShip(player))
+                if (CollisionDetector.CollisionHasOccurred(player, bullet))
                 {
                     return true;
                 }
@@ -99,8 +98,8 @@ namespace SpaceInvaders.Model
 
             return false;
         }
-
-        public void EnemiesShoot()
+        
+        public EnemyBullet EnemiesShoot()
         {
             if (this.randomShotFired())
             {
@@ -108,7 +107,11 @@ namespace SpaceInvaders.Model
                 var bullet = enemy.FireBullet();
                 this.EnemyBullets.Add(bullet);
                 this.setBulletCoordinates(enemy, bullet);
+
+                return bullet;
             }
+
+            return null;
         }
 
         private void setBulletCoordinates(EnemyShip enemy, EnemyBullet bullet)
@@ -151,13 +154,24 @@ namespace SpaceInvaders.Model
 
         public void RemoveOffScreenEnemyBulletsBullets(double height)
         {
+            foreach (var bullet in this.findOffscreenBullets(height))
+            {
+                this.EnemyBullets.Remove(bullet);
+            }
+        }
+
+        private IList<EnemyBullet> findOffscreenBullets(double height)
+        {
+            IList<EnemyBullet> bulletsToRemove = new List<EnemyBullet>();
             foreach (var bullet in this.EnemyBullets)
             {
                 if (bullet.Y > height)
                 {
-                    this.EnemyBullets.Remove(bullet);
+                    bulletsToRemove.Add(bullet);
                 }
             }
+
+            return bulletsToRemove;
         }
     }
 }

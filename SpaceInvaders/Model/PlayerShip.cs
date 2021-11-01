@@ -89,7 +89,7 @@ namespace SpaceInvaders.Model
         /// </returns>
         public bool CanFire()
         {
-            return this.PlayerBullets.Count <= 3 && this.checkProperBulletSpacing();
+            return this.PlayerBullets.Count < 3 && this.checkProperBulletSpacing();
         }
 
         private bool checkProperBulletSpacing()

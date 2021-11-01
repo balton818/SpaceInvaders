@@ -4,7 +4,6 @@ using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 using SpaceInvaders.Model;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -27,7 +26,7 @@ namespace SpaceInvaders.View
         ///     The application width
         /// </summary>
         public const double ApplicationWidth = 640;
-        
+
         private readonly GameManager gameManager;
 
         #endregion
@@ -49,13 +48,27 @@ namespace SpaceInvaders.View
 
             this.gameManager = new GameManager(ApplicationHeight, ApplicationWidth);
             this.gameManager.InitializeGame(this.theCanvas);
-
+            this.gameManager.ScoreboardUpdated += this.handleScoreUpdate;
+            this.gameManager.PlayerKilled += this.handlePlayerDeath;
         }
 
         #endregion
 
         #region Methods
+
         //TODO add fuctionality that the View clears and displays the end game message when appropriate
+        private void handleScoreUpdate(int score)
+        {
+            this.scoreBoard.Text = "Score: " + score;
+        }
+
+        private void handlePlayerDeath()
+        {
+            var output = "You were killed by the alien invaders. Game Over.";
+            output += Environment.NewLine + "Score: " + this.gameManager.Score;
+            this.scoreBoard.Text = output;
+
+        }
 
         private void coreWindowOnKeyDown(CoreWindow sender, KeyEventArgs args)
         {
@@ -72,7 +85,7 @@ namespace SpaceInvaders.View
                     break;
             }
         }
-        
+
         private void showPlayerWon()
         {
             var output = "Congratulations! You saved the galaxy!";
@@ -87,6 +100,7 @@ namespace SpaceInvaders.View
             output += "Score: " + this.gameManager.Score;
             this.scoreBoard.Text = output;
         }
+
         #endregion
     }
 }

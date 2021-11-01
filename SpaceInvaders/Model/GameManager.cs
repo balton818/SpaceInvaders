@@ -12,7 +12,9 @@ namespace SpaceInvaders.Model
     {
         #region Types and Delegates
 
-        public delegate void PlayerDeathHandler(bool gameOver);
+        public delegate void PlayerDeathHandler();
+
+        public delegate void ScoreboardUpdateHandler(int score);
 
         #endregion
 
@@ -41,21 +43,13 @@ namespace SpaceInvaders.Model
         #endregion
 
         #region Properties
-
-        /// <summary>Gets the player bullets currently in play.</summary>
-        /// <value>The player bullets.</value>
-        public PlayerBullet PlayerBullet { get; set; }
-
-        /// <summary>Gets or sets the enemy bullets.</summary>
-        /// <value>The enemy bullets.</value>
-        public IList<EnemyBullet> EnemyBullets { get; set; }
-
+        
         /// <summary>
         ///     Gets or sets the user's score
         /// </summary>
         /// <value>The score.</value>
         public int Score { get; set; }
-
+        
         #endregion
 
         #region Constructors
@@ -80,8 +74,6 @@ namespace SpaceInvaders.Model
 
             this.enemyFleetManager = new EnemyFleetManager();
 
-            this.EnemyBullets = new List<EnemyBullet>();
-
             this.movingLeft = true;
             this.enemyMoveCounter = 0;
             this.Score = 0;
@@ -93,8 +85,6 @@ namespace SpaceInvaders.Model
         #endregion
 
         #region Methods
-
-        public event PlayerDeathHandler GameOver;
 
         /// <summary>
         ///     Initializes the game placing player ship and enemy ship in the game.
@@ -117,18 +107,19 @@ namespace SpaceInvaders.Model
             this.showAllEnemies();
         }
 
+        public event ScoreboardUpdateHandler ScoreboardUpdated;
+        public event PlayerDeathHandler PlayerKilled;
+
         private void timerTick(object sender, object e)
         {
+            this.checkIfPlayerWasHit();
             this.enemyFleetManager.MoveEnemies();
-            this.enemyFleetManager.EnemiesShoot();
+            this.showEnemyBullets();
+            this.moveAllEnemyBullets();
             this.enemyFleetManager.RemoveOffScreenEnemyBulletsBullets(this.backgroundHeight);
-            //this.playerBulletManager.MoveBullets();
             this.MoveAllPlayerBullets();
             this.playerShip.RemoveOffScreenPlayerBullets();
             this.DetectPlayerHitsAndIncreaseScore();
-            //this.enemyBulletManager.MoveBullets();
-            //this.updateScore();
-            //this.checkIfGameOver();
         }
 
         private void createAndPlacePlayerShip()
@@ -199,6 +190,10 @@ namespace SpaceInvaders.Model
             {
                 this.playerShip.MoveLeft();
             }
+            else
+            {
+                this.playerShip.X = 0;
+            }
         }
 
         /// <summary>
@@ -212,6 +207,10 @@ namespace SpaceInvaders.Model
             {
                 this.playerShip.MoveRight();
             }
+            else
+            {
+                this.playerShip.X = this.backgroundWidth - this.playerShip.Width;
+            }
         }
 
         /// <summary>Fires the bullet if one has not already been fired.</summary>
@@ -223,7 +222,6 @@ namespace SpaceInvaders.Model
                 var bullet = this.playerShip.FireBullet();
                 this.placePlayerBullet(bullet);
                 this.createPlayerBullet(bullet);
-                this.PlayerBullet = bullet;
             }
         }
 
@@ -260,8 +258,8 @@ namespace SpaceInvaders.Model
                 if (bullet != null)
                 {
                     this.background.Children.Remove(bullet.Sprite);
-                    this.enemyFleetManager.EnemyShips.Remove(enemy);
                     this.determineScore(enemy);
+                    this.removeDeadEnemy(enemy);
                     return enemy;
                 }
             }
@@ -269,33 +267,47 @@ namespace SpaceInvaders.Model
             return null;
         }
 
+        private void removeDeadEnemy(EnemyShip enemy)
+        {
+            this.enemyFleetManager.EnemyShips.Remove(enemy);
+            this.background.Children.Remove(enemy.Sprite);
+        }
+
         private void determineScore(EnemyShip enemy)
         {
             this.Score += enemy.PointValue;
+            this.ScoreboardUpdated?.Invoke(this.Score);
         }
-
-        private void showEnemyBullet(EnemyBullet bullet)
+        
+        private void showEnemyBullets()
         {
-            this.background.Children.Add(bullet.Sprite);
-        }
+            var bullet = this.enemyFleetManager.EnemiesShoot();
 
-        /// <summary>Moves all enemy bullets.</summary>
-        public void MoveAllEnemyBullets()
-        {
-            if (this.EnemyBullets.Count > 0)
+            if (bullet != null)
             {
-                foreach (var bullet in this.EnemyBullets)
+                this.background.Children.Add(bullet.Sprite);
+            }
+        }
+        
+        /// <summary>Moves all enemy bullets.</summary>
+        private void moveAllEnemyBullets()
+        {
+            if (this.enemyFleetManager.EnemyBullets.Count > 0)
+            {
+                foreach (var bullet in this.enemyFleetManager.EnemyBullets)
                 {
                     bullet.MoveDown();
                 }
             }
         }
 
-        private void onGameOver()
+        private void checkIfPlayerWasHit()
         {
-            if (this.GameOver != null)
+            if (this.enemyFleetManager.DetermineIfPlayerWasHit(this.playerShip))
             {
-                this.GameOver(true);
+                this.PlayerKilled?.Invoke();
+                this.background.Children.Remove(this.playerShip.Sprite);
+                this.gameTimer.Stop();
             }
         }
         
