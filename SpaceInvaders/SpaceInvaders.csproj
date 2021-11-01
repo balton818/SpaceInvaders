@@ -120,16 +120,16 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\AggressiveEnemyShip.cs" />
     <Compile Include="Model\CollisionDetector.cs" />
     <Compile Include="Model\EnemyBullet.cs" />
     <Compile Include="Model\BulletManager.cs" />
     <Compile Include="Model\EnemyShip.cs" />
-    <Compile Include="Model\EnemyShip1.cs" />
-    <Compile Include="Model\EnemyShip2.cs" />
-    <Compile Include="Model\EnemyShip3.cs" />
     <Compile Include="Model\EnemyFleetManager.cs" />
+    <Compile Include="Model\EnemyType.cs" />
     <Compile Include="Model\GameManager.cs" />
     <Compile Include="Model\GameObject.cs" />
+    <Compile Include="Model\PassiveEnemyShip.cs" />
     <Compile Include="Model\PlayerBullet.cs" />
     <Compile Include="Model\PlayerShip.cs" />
     <Compile Include="View\MainPage.xaml.cs">
@@ -141,6 +141,9 @@
     </Compile>
     <Compile Include="View\Sprites\EnemyBulletSprite.xaml.cs">
       <DependentUpon>EnemyBulletSprite.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Sprites\Level4EnemyShipSprite.xaml.cs">
+      <DependentUpon>Level4EnemyShipSprite.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Sprites\PlayerBulletSprite.xaml.cs">
       <DependentUpon>PlayerBulletSprite.xaml</DependentUpon>
@@ -189,6 +192,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Sprites\EnemyBulletSprite.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Sprites\Level4EnemyShipSprite.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

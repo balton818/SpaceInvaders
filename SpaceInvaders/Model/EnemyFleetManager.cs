@@ -1,64 +1,81 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 
 namespace SpaceInvaders.Model
 {
     public class EnemyFleetManager
     {
+        #region Data members
+
         public const int NumberOfLevel1Enemies = 4;
         public const int NumberOfLevel2Enemies = 4;
         public const int NumberOfLevel3Enemies = 4;
+        public const int NumberOfLevel4Enemies = 4;
+
         private const int numberOfEnemySteps = 20;
+
         private const int lowerProbabilityBound = 20;
         private const int upperProbabilityBound = 30;
 
         private bool movingLeft;
         private int enemyMoveCounter;
 
+        #endregion
+
+        #region Properties
+
         public IList<EnemyShip> EnemyShips { get; set; }
 
-        public IList<EnemyBullet> EnemyBullets { get; private set; }
+        public IList<EnemyBullet> EnemyBullets { get; }
+
+        #endregion
+
+        #region Constructors
 
         public EnemyFleetManager()
         {
             this.EnemyShips = new List<EnemyShip>();
             this.EnemyBullets = new List<EnemyBullet>();
 
-            this.createLevel1Enemies();
-            this.createLevel2Enemies();
-            this.createLevel3Enemies();
+            this.createPassiveEnemies();
+            this.createAggressiveEnemies();
 
             this.movingLeft = true;
+            this.enemyMoveCounter = 0;
         }
 
-        private void createLevel1Enemies()
+        #endregion
+
+        #region Methods
+
+        private void createPassiveEnemies()
         {
             for (var index = 0; index < NumberOfLevel1Enemies; index++)
             {
-                EnemyShip enemy = new EnemyShip1();
+                var enemy = new PassiveEnemyShip(1);
                 this.EnemyShips.Add(enemy);
             }
-        }
 
-        private void createLevel2Enemies()
-        {
             for (var index = 0; index < NumberOfLevel2Enemies; index++)
             {
-                EnemyShip enemy = new EnemyShip2();
+                var enemy = new PassiveEnemyShip(2);
                 this.EnemyShips.Add(enemy);
             }
         }
 
-        private void createLevel3Enemies()
+        private void createAggressiveEnemies()
         {
+            EnemyShip enemy;
             for (var index = 0; index < NumberOfLevel3Enemies; index++)
             {
-                EnemyShip enemy = new EnemyShip3();
+                enemy = new AggressiveEnemyShip(1);
+                this.EnemyShips.Add(enemy);
+            }
+
+            for (var index = 0; index < NumberOfLevel4Enemies; index++)
+            {
+                enemy = new AggressiveEnemyShip(2);
                 this.EnemyShips.Add(enemy);
             }
         }
@@ -98,7 +115,7 @@ namespace SpaceInvaders.Model
 
             return false;
         }
-        
+
         public EnemyBullet EnemiesShoot()
         {
             if (this.randomShotFired())
@@ -123,20 +140,26 @@ namespace SpaceInvaders.Model
             bullet.Y = y;
         }
 
-        private EnemyShip3 pickRandomEnemy()
+        private AggressiveEnemyShip pickRandomEnemy()
         {
+            var random = new Random();
+            List<EnemyShip> aggressiveEnemies = null;
             if (this.EnemyShips.Count > 0)
             {
-                var random = new Random();
-                var level3Enemies = from enemy in this.EnemyShips where enemy.GetType() == typeof(EnemyShip3) select enemy;
-                var index = random.Next(level3Enemies.Count());
-                var randomEnemy = level3Enemies.ToList()[index];
+                var enemyShips = from enemy in this.EnemyShips
+                                 where enemy.EnemyLevel == EnemyType.Level3 || enemy.EnemyLevel == EnemyType.Level4
+                                 select enemy;
+                aggressiveEnemies = enemyShips.ToList();
+            }
 
-                return (EnemyShip3)randomEnemy;
+            if (aggressiveEnemies?.Count > 0)
+            {
+                var index = random.Next(aggressiveEnemies.Count());
+                var randomEnemy = aggressiveEnemies[index];
+                return (AggressiveEnemyShip) randomEnemy;
             }
 
             return null;
-
         }
 
         private bool randomShotFired()
@@ -173,5 +196,7 @@ namespace SpaceInvaders.Model
 
             return bulletsToRemove;
         }
+
+        #endregion
     }
 }

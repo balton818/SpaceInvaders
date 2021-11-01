@@ -49,25 +49,31 @@ namespace SpaceInvaders.View
             this.gameManager = new GameManager(ApplicationHeight, ApplicationWidth);
             this.gameManager.InitializeGame(this.theCanvas);
             this.gameManager.ScoreboardUpdated += this.handleScoreUpdate;
-            this.gameManager.PlayerKilled += this.handlePlayerDeath;
+            this.gameManager.PlayerKilled += this.handlePlayerLost;
+            this.gameManager.PlayerWon += this.handlePlayerWon;
         }
 
         #endregion
 
         #region Methods
 
-        //TODO add fuctionality that the View clears and displays the end game message when appropriate
         private void handleScoreUpdate(int score)
         {
             this.scoreBoard.Text = "Score: " + score;
         }
 
-        private void handlePlayerDeath()
+        private void handlePlayerLost()
         {
             var output = "You were killed by the alien invaders. Game Over.";
             output += Environment.NewLine + "Score: " + this.gameManager.Score;
             this.scoreBoard.Text = output;
+        }
 
+        private void handlePlayerWon()
+        {
+            var output = "Congratulations! You saved the galaxy from the alien invaders!";
+            output += Environment.NewLine + "Score: " + this.gameManager.Score;
+            this.scoreBoard.Text = output;
         }
 
         private void coreWindowOnKeyDown(CoreWindow sender, KeyEventArgs args)
@@ -84,21 +90,6 @@ namespace SpaceInvaders.View
                     this.gameManager.FireBullet();
                     break;
             }
-        }
-
-        private void showPlayerWon()
-        {
-            var output = "Congratulations! You saved the galaxy!";
-            output += Environment.NewLine + "Score: " + this.gameManager.Score;
-            this.scoreBoard.Text = output;
-        }
-
-        private void showPlayerLost()
-        {
-            var output = "You were killed by the alien invaders.";
-            output += Environment.NewLine + "Game Over.";
-            output += "Score: " + this.gameManager.Score;
-            this.scoreBoard.Text = output;
         }
 
         #endregion

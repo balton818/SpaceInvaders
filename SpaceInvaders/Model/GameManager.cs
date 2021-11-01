@@ -16,12 +16,17 @@ namespace SpaceInvaders.Model
 
         public delegate void ScoreboardUpdateHandler(int score);
 
+        public delegate void PlayerWinHandler();
+
         #endregion
 
         #region Data members
 
         private const double PlayerShipBottomOffset = 30;
-        private const int EnemyShipTopOffset = 50;
+        private const int Row1YPosition = 25;
+        private const int Row2YPosition = 75;
+        private const int Row3YPosition = 125;
+        private const int Row4YPosition = 185;
 
         private const int NumberOfLevel1Enemies = 4;
         private const int NumberOfLevel2Enemies = 4;
@@ -33,10 +38,7 @@ namespace SpaceInvaders.Model
 
         private readonly double backgroundHeight;
         private readonly double backgroundWidth;
-
-        private bool movingLeft;
-        private int enemyMoveCounter;
-
+        
         private PlayerShip playerShip;
         private Canvas background;
 
@@ -74,8 +76,6 @@ namespace SpaceInvaders.Model
 
             this.enemyFleetManager = new EnemyFleetManager();
 
-            this.movingLeft = true;
-            this.enemyMoveCounter = 0;
             this.Score = 0;
 
             this.backgroundHeight = backgroundHeight;
@@ -109,6 +109,7 @@ namespace SpaceInvaders.Model
 
         public event ScoreboardUpdateHandler ScoreboardUpdated;
         public event PlayerDeathHandler PlayerKilled;
+        public event PlayerWinHandler PlayerWon;
 
         private void timerTick(object sender, object e)
         {
@@ -120,6 +121,7 @@ namespace SpaceInvaders.Model
             this.MoveAllPlayerBullets();
             this.playerShip.RemoveOffScreenPlayerBullets();
             this.DetectPlayerHitsAndIncreaseScore();
+            this.checkIfPlayerWon();
         }
 
         private void createAndPlacePlayerShip()
@@ -141,32 +143,40 @@ namespace SpaceInvaders.Model
             var enemy1Counter = 0;
             var enemy2Counter = 0;
             var enemy3Counter = 0;
+            var enemy4Counter = 0;
 
             foreach (var enemy in this.enemyFleetManager.EnemyShips)
             {
-                var type = enemy.GetType();
+                var level = enemy.EnemyLevel;
                 var centerOffset = enemy.Width;
 
-                if (type == typeof(EnemyShip1))
+                if (level == EnemyType.Level1)
                 {
                     centerOffset = centerOffset * EnemyFleetManager.NumberOfLevel1Enemies / 2;
                     enemy.X = this.backgroundWidth / 2 + enemy.Width * enemy1Counter - centerOffset;
-                    enemy.Y = EnemyShipTopOffset * 3;
+                    enemy.Y = Row4YPosition;
                     enemy1Counter++;
                 }
-                else if (type == typeof(EnemyShip2))
+                else if (level == EnemyType.Level2)
                 {
                     centerOffset = centerOffset * EnemyFleetManager.NumberOfLevel2Enemies / 2;
                     enemy.X = this.backgroundWidth / 2 + enemy.Width * enemy2Counter - centerOffset;
-                    enemy.Y = EnemyShipTopOffset * 2;
+                    enemy.Y = Row3YPosition;
                     enemy2Counter++;
                 }
-                else if (type == typeof(EnemyShip3))
+                else if (level == EnemyType.Level3)
                 {
                     centerOffset = centerOffset * EnemyFleetManager.NumberOfLevel3Enemies / 2;
                     enemy.X = this.backgroundWidth / 2 + enemy.Width * enemy3Counter - centerOffset;
-                    enemy.Y = EnemyShipTopOffset;
+                    enemy.Y = Row2YPosition;
                     enemy3Counter++;
+                }
+                else if (level == EnemyType.Level4)
+                {
+                    centerOffset = centerOffset * EnemyFleetManager.NumberOfLevel4Enemies / 2;
+                    enemy.X = this.backgroundWidth / 2 + enemy.Width * enemy4Counter - centerOffset;
+                    enemy.Y = Row1YPosition;
+                    enemy4Counter++;
                 }
             }
         }
@@ -307,6 +317,15 @@ namespace SpaceInvaders.Model
             {
                 this.PlayerKilled?.Invoke();
                 this.background.Children.Remove(this.playerShip.Sprite);
+                this.gameTimer.Stop();
+            }
+        }
+
+        private void checkIfPlayerWon()
+        {
+            if (this.enemyFleetManager.EnemyShips.Count == 0)
+            {
+                this.PlayerWon?.Invoke();
                 this.gameTimer.Stop();
             }
         }
