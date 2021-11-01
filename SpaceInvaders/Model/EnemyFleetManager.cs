@@ -122,20 +122,31 @@ namespace SpaceInvaders.Model
 
         private EnemyShip3 pickRandomEnemy()
         {
-            var random = new Random();
-            var level3Enemies = from enemy in this.EnemyShips where enemy.GetType() == typeof(EnemyShip3) select enemy;
-            var index = random.Next(level3Enemies.Count());
-            var randomEnemy = level3Enemies.ToList()[index];
+            if (this.EnemyShips.Count > 0)
+            {
+                var random = new Random();
+                var level3Enemies = from enemy in this.EnemyShips where enemy.GetType() == typeof(EnemyShip3) select enemy;
+                var index = random.Next(level3Enemies.Count());
+                var randomEnemy = level3Enemies.ToList()[index];
 
-            return (EnemyShip3) randomEnemy;
+                return (EnemyShip3)randomEnemy;
+            }
+
+            return null;
+
         }
 
         private bool randomShotFired()
         {
-            var random = new Random();
-            var value = random.Next(100);
+            if (this.EnemyShips.Count > 0)
+            {
+                var random = new Random();
+                var value = random.Next(100);
 
-            return value > lowerProbabilityBound && value < upperProbabilityBound;
+                return value > lowerProbabilityBound && value < upperProbabilityBound;
+            }
+
+            return false;
         }
 
         public void RemoveOffScreenEnemyBulletsBullets(double height)

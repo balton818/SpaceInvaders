@@ -125,6 +125,7 @@ namespace SpaceInvaders.Model
             //this.playerBulletManager.MoveBullets();
             this.MoveAllPlayerBullets();
             this.playerShip.RemoveOffScreenPlayerBullets();
+            this.DetectPlayerHitsAndIncreaseScore();
             //this.enemyBulletManager.MoveBullets();
             //this.updateScore();
             //this.checkIfGameOver();
@@ -255,8 +256,10 @@ namespace SpaceInvaders.Model
         {
             foreach (var enemy in this.enemyFleetManager.EnemyShips)
             {
-                if (this.playerShip.DetermineIfEnemyWasHit(enemy))
+                var bullet = this.playerShip.DetermineIfEnemyWasHit(enemy);
+                if (bullet != null)
                 {
+                    this.background.Children.Remove(bullet.Sprite);
                     this.enemyFleetManager.EnemyShips.Remove(enemy);
                     this.determineScore(enemy);
                     return enemy;
@@ -295,7 +298,7 @@ namespace SpaceInvaders.Model
                 this.GameOver(true);
             }
         }
-
+        
         #endregion
     }
 }

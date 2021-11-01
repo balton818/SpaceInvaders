@@ -14,7 +14,6 @@ namespace SpaceInvaders.Model
 
         private const int SpeedXDirection = 20;
         private const int SpeedYDirection = 0;
-        private int bulletsOnScreen;
 
         #endregion
 
@@ -36,7 +35,6 @@ namespace SpaceInvaders.Model
             Sprite = new PlayerShipSprite();
             SetSpeed(SpeedXDirection, SpeedYDirection);
             this.PlayerBullets = new List<PlayerBullet>(1);
-            this.bulletsOnScreen = 0;
         }
 
         #endregion
@@ -66,7 +64,7 @@ namespace SpaceInvaders.Model
         /// <param name="enemy">The enemy.</param>
         /// <returns>true if the enemy was hit; false otherwise</returns>
         /// <exception cref="System.ArgumentException">Enemy object cannot be null</exception>
-        public bool DetermineIfEnemyWasHit(EnemyShip enemy)
+        public PlayerBullet DetermineIfEnemyWasHit(EnemyShip enemy)
         {
             if (enemy == null)
             {
@@ -78,11 +76,11 @@ namespace SpaceInvaders.Model
                 if (CollisionDetector.CollisionHasOccurred(enemy, bullet))
                 {
                     this.PlayerBullets.Remove(bullet);
-                    return true;
+                    return bullet;
                 }
             }
 
-            return false;
+            return null;
         }
 
         /// <summary>Determines whether the PlayerShip can fire.</summary>
@@ -91,19 +89,18 @@ namespace SpaceInvaders.Model
         /// </returns>
         public bool CanFire()
         {
-            return (this.bulletsOnScreen < 3 && this.checkProperBulletSpacing());
+            return this.PlayerBullets.Count <= 3 && this.checkProperBulletSpacing();
         }
 
         private bool checkProperBulletSpacing()
         {
-            if (this.bulletsOnScreen > 0)
+            if (this.PlayerBullets.Count > 0)
             {
-                double spacing = this.PlayerBullets[this.bulletsOnScreen - 1].Y;
-                return (this.Y - spacing) > this.PlayerBullets[0].Height;
+                var lastBulletPosition = this.PlayerBullets[this.PlayerBullets.Count - 1].Y;
+                return this.Y - lastBulletPosition > this.PlayerBullets[this.PlayerBullets.Count - 1].Height;
             }
 
             return true;
-
         }
 
         /// <summary>Fires the bullet.</summary>
@@ -112,7 +109,6 @@ namespace SpaceInvaders.Model
         {
             var bullet = new PlayerBullet();
             this.PlayerBullets.Add(bullet);
-            this.bulletsOnScreen++;
             return bullet;
         }
 
@@ -120,7 +116,6 @@ namespace SpaceInvaders.Model
         {
             foreach (var bullet in this.findOffscreenBullets())
             {
-                this.bulletsOnScreen--;
                 this.PlayerBullets.Remove(bullet);
             }
         }
@@ -139,8 +134,6 @@ namespace SpaceInvaders.Model
 
             return bulletsToRemove;
         }
-
-
 
         #endregion
     }
