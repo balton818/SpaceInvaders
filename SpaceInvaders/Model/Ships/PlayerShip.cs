@@ -23,6 +23,8 @@ namespace SpaceInvaders.Model
         /// <value>The player bullets.</value>
         public IList<PlayerBullet> PlayerBullets { get; set; }
 
+        public int LivesRemaining { get; set; }
+
         #endregion
 
         #region Constructors
@@ -35,8 +37,9 @@ namespace SpaceInvaders.Model
             Sprite = new PlayerShipSprite();
             SetSpeed(SpeedXDirection, SpeedYDirection);
             this.PlayerBullets = new List<PlayerBullet>(1);
+            this.LivesRemaining = 2;
         }
-
+        
         #endregion
 
         #region Methods

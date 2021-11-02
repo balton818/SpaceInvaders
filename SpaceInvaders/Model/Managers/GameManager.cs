@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Windows.Gaming.Input;
+using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using SpaceInvaders.View.Sprites;
+using SpaceInvaders.View.Sprites.ShipSprites;
 
 namespace SpaceInvaders.Model
 {
@@ -13,6 +18,8 @@ namespace SpaceInvaders.Model
         #region Types and Delegates
 
         public delegate void PlayerDeathHandler();
+
+        public delegate void PlayerHitHandler(int livesRemaining);
 
         public delegate void ScoreboardUpdateHandler(int score);
 
@@ -35,7 +42,8 @@ namespace SpaceInvaders.Model
         private readonly EnemyFleetManager enemyFleetManager;
 
         private DispatcherTimer gameTimer;
-
+        private int tickCounter;
+        
         private readonly double backgroundHeight;
         private readonly double backgroundWidth;
         
@@ -110,11 +118,14 @@ namespace SpaceInvaders.Model
         public event ScoreboardUpdateHandler ScoreboardUpdated;
         public event PlayerDeathHandler PlayerKilled;
         public event PlayerWinHandler PlayerWon;
+        public event PlayerHitHandler PlayerHit;
 
         private void timerTick(object sender, object e)
         {
+            this.tickCounter++;
             this.checkIfPlayerWasHit();
             this.enemyFleetManager.MoveEnemies();
+            //this.animateMovement();
             this.showEnemyBullets();
             this.moveAllEnemyBullets();
             this.enemyFleetManager.RemoveOffScreenEnemyBulletsBullets(this.backgroundHeight);
@@ -227,7 +238,7 @@ namespace SpaceInvaders.Model
         /// <param name="background">The background.</param>
         public void FireBullet()
         {
-            if (this.playerShip.CanFire())
+            if (this.playerShip.CanFire() && this.gameTimer.IsEnabled)
             {
                 var bullet = this.playerShip.FireBullet();
                 this.placePlayerBullet(bullet);
@@ -313,11 +324,22 @@ namespace SpaceInvaders.Model
 
         private void checkIfPlayerWasHit()
         {
-            if (this.enemyFleetManager.DetermineIfPlayerWasHit(this.playerShip))
+            EnemyBullet bullet = this.enemyFleetManager.DetermineIfPlayerWasHit(this.playerShip);
+            if (bullet != null)
             {
-                this.PlayerKilled?.Invoke();
-                this.background.Children.Remove(this.playerShip.Sprite);
-                this.gameTimer.Stop();
+                if (this.playerShip.LivesRemaining <= 0)
+                {
+                    this.PlayerKilled?.Invoke();
+                    this.background.Children.Remove(this.playerShip.Sprite);
+                    this.gameTimer.Stop();
+                }
+                else
+                {
+                    this.playerShip.LivesRemaining--;
+                    this.PlayerHit?.Invoke(this.playerShip.LivesRemaining);
+                }
+
+                this.background.Children.Remove(bullet.Sprite);
             }
         }
 
@@ -329,7 +351,28 @@ namespace SpaceInvaders.Model
                 this.gameTimer.Stop();
             }
         }
-        
+
+        private void animateMovement()
+        {
+            this.buildSecondFrames();
+        }
+
+        private void buildSecondFrames()
+        {
+            var enemiesToAnimate = from enemy in this.enemyFleetManager.EnemyShips
+                                   where enemy.EnemyLevel == EnemyType.Level2 || enemy.EnemyLevel == EnemyType.Level3 || enemy.EnemyLevel == EnemyType.Level4
+                                   select enemy;
+            foreach (var enemy in enemiesToAnimate.ToList())
+            {
+                EnemyShip frame2 = new PassiveEnemyShip(0);
+                frame2.X = enemy.X;
+                frame2.Y = enemy.Y;
+                
+                this.background.Children.Add(frame2.Sprite);
+                this.background.Children.Remove(enemy.Sprite);
+                this.background.Children.Add(enemy.Sprite);
+            }
+        }
         #endregion
     }
 }

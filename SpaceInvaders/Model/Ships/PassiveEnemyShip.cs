@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.Design;
 using SpaceInvaders.View.Sprites;
+using SpaceInvaders.View.Sprites.ShipSprites;
 
 namespace SpaceInvaders.Model
 {
@@ -7,7 +8,11 @@ namespace SpaceInvaders.Model
     {
         public PassiveEnemyShip(int level)
         {
-            if (level == 1)
+            if (level == 0)
+            {
+                Sprite = new EnemyShipFrame2Sprite();
+            }
+            else if (level == 1)
             {
                 Sprite = new Level1EnemySprite();
                 SetPoints(1);

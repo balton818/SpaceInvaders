@@ -102,18 +102,19 @@ namespace SpaceInvaders.Model
                 this.enemyMoveCounter = 0;
             }
         }
-
-        public bool DetermineIfPlayerWasHit(PlayerShip player)
+        
+        public EnemyBullet DetermineIfPlayerWasHit(PlayerShip player)
         {
             foreach (var bullet in this.EnemyBullets)
             {
                 if (CollisionDetector.CollisionHasOccurred(player, bullet))
                 {
-                    return true;
+                    this.EnemyBullets.Remove(bullet);
+                    return bullet;
                 }
             }
 
-            return false;
+            return null;
         }
 
         public EnemyBullet EnemiesShoot()

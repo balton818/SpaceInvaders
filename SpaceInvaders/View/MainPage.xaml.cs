@@ -51,6 +51,7 @@ namespace SpaceInvaders.View
             this.gameManager.ScoreboardUpdated += this.handleScoreUpdate;
             this.gameManager.PlayerKilled += this.handlePlayerLost;
             this.gameManager.PlayerWon += this.handlePlayerWon;
+            this.gameManager.PlayerHit += this.handlePlayerHit;
         }
 
         #endregion
@@ -74,6 +75,12 @@ namespace SpaceInvaders.View
             var output = "Congratulations! You saved the galaxy from the alien invaders!";
             output += Environment.NewLine + "Score: " + this.gameManager.Score;
             this.scoreBoard.Text = output;
+        }
+
+        private void handlePlayerHit(int lives)
+        {
+            var output = "Lives Remaining: " + lives;
+            this.livesCounter.Text = output;
         }
 
         private void coreWindowOnKeyDown(CoreWindow sender, KeyEventArgs args)

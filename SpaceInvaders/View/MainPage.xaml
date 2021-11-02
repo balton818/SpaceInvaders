@@ -8,6 +8,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Canvas x:Name="theCanvas" Width="640" Height="480" Background ="Black">
-        <TextBlock x:Name="scoreBoard" FontSize="20" Text="Score: 0" TextWrapping="Wrap" Height="63" Width="638"/>
+        <TextBlock x:Name="scoreBoard" FontSize="20" Text="Score: 0" TextWrapping="Wrap" Height="63" Width="638" Canvas.Top="369"/>
+        <TextBlock x:Name="livesCounter" FontSize="20" Text="Lives Remaining: 2"  Canvas.Left="239" Canvas.Top="450"  TextWrapping="Wrap" Height="28" Width="166"/>
     </Canvas>
 </Page>
