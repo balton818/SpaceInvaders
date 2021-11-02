@@ -12,7 +12,6 @@ namespace SpaceInvaders.View.Sprites
         {
             this.InitializeComponent();
         }
-
         #endregion
     }
 }

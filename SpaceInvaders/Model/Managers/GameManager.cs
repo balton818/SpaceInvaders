@@ -40,6 +40,7 @@ namespace SpaceInvaders.Model
         private const int NumberOfLevel3Enemies = 4;
 
         private readonly EnemyFleetManager enemyFleetManager;
+        private MovementAnimator animator;
 
         private DispatcherTimer gameTimer;
         private int tickCounter;
@@ -83,6 +84,7 @@ namespace SpaceInvaders.Model
             }
 
             this.enemyFleetManager = new EnemyFleetManager();
+            
 
             this.Score = 0;
 
@@ -109,6 +111,8 @@ namespace SpaceInvaders.Model
             this.gameTimer.Interval = new TimeSpan(0, 0, 0, 0, 20);
             this.gameTimer.Start();
 
+            this.animator = new MovementAnimator(this.background, this.enemyFleetManager.EnemyShips);
+
             this.createAndPlacePlayerShip();
 
             this.placeAllEnemies();
@@ -125,7 +129,7 @@ namespace SpaceInvaders.Model
             this.tickCounter++;
             this.checkIfPlayerWasHit();
             this.enemyFleetManager.MoveEnemies();
-            //this.animateMovement();
+            this.animateMovement();
             this.showEnemyBullets();
             this.moveAllEnemyBullets();
             this.enemyFleetManager.RemoveOffScreenEnemyBulletsBullets(this.backgroundHeight);
@@ -354,7 +358,8 @@ namespace SpaceInvaders.Model
 
         private void animateMovement()
         {
-            this.buildSecondFrames();
+            //this.buildSecondFrames();
+            this.animator.animateObjects();
         }
 
         private void buildSecondFrames()
