@@ -134,10 +134,10 @@ namespace SpaceInvaders.Model.Managers
         {
             this.checkIfPlayerWasHit();
             this.enemyFleetManager.MoveEnemies();
-            this.animateMovement();
+            this.animateEnemyMovement();
             this.showEnemyBullets();
             this.moveAllEnemyBullets();
-            this.enemyFleetManager.RemoveOffScreenEnemyBulletsBullets(this.backgroundHeight);
+            this.enemyFleetManager.RemoveOffScreenEnemyBullets(this.backgroundHeight);
             this.MoveAllPlayerBullets();
             this.playerShip.RemoveOffScreenPlayerBullets();
             this.DetectPlayerHitsAndIncreaseScore();
@@ -198,14 +198,6 @@ namespace SpaceInvaders.Model.Managers
                     enemy.Y = Row1YPosition;
                     enemy4Counter++;
                 }
-            }
-        }
-
-        private void showAllEnemies()
-        {
-            foreach (var enemy in this.enemyFleetManager.EnemyShips)
-            {
-                this.background.Children.Add(enemy.Sprite);
             }
         }
 
@@ -360,7 +352,7 @@ namespace SpaceInvaders.Model.Managers
             }
         }
 
-        private void animateMovement()
+        private void animateEnemyMovement()
         {
             this.animator.AnimateEnemies();
         }

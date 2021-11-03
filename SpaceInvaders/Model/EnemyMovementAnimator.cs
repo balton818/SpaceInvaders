@@ -30,12 +30,17 @@ namespace SpaceInvaders.Model
 
         #region Constructors
 
-        /// <summary>Initializes a new instance of the <see cref="EnemyMovementAnimator" /> class.</summary>
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="EnemyMovementAnimator" /> class.
+        ///     Precondition: background != null, enemiesToAnimate != null
+        /// </summary>
         /// <param name="background">The background.</param>
         /// <param name="enemiesToAnimate">The enemies to animate.</param>
-        /// <exception cref="System.ArgumentException">Background cannot be null
-        /// or
-        /// Enemies cannot be null</exception>
+        /// <exception cref="System.ArgumentException">
+        ///     Background cannot be null
+        ///     or
+        ///     Enemies cannot be null
+        /// </exception>
         public EnemyMovementAnimator(Canvas background, IList<EnemyShip> enemiesToAnimate)
         {
             this.background = background ?? throw new ArgumentException("Background cannot be null");
@@ -49,19 +54,19 @@ namespace SpaceInvaders.Model
         /// <summary>Animates the enemies.</summary>
         public void AnimateEnemies()
         {
-            foreach (var item in this.selectEnemiesToAnimate())
+            foreach (var enemyShip in this.selectEnemiesToAnimate())
             {
                 if (this.rotationCounter == 0)
                 {
-                    this.rotate(item, InitialRotationDisplacement);
+                    rotate(enemyShip, InitialRotationDisplacement);
                 }
                 else if (this.rotationCounter % 2 == 0)
                 {
-                    this.rotate(item, RotationDisplacement);
+                    rotate(enemyShip, RotationDisplacement);
                 }
                 else
                 {
-                    this.rotate(item, -RotationDisplacement);
+                    rotate(enemyShip, -RotationDisplacement);
                 }
             }
 
@@ -69,7 +74,7 @@ namespace SpaceInvaders.Model
             this.rotationCounter++;
         }
 
-        private void rotate(EnemyShip enemy, int angle)
+        private static void rotate(EnemyShip enemy, int angle)
         {
             var rotation = new RotateTransform {Angle = angle};
             enemy.Sprite.RenderTransformOrigin = new Point(.5, .5);

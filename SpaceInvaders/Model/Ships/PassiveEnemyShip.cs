@@ -2,10 +2,10 @@
 
 namespace SpaceInvaders.Model.Ships
 {
-
     /// <summary>Defines the behavior and attributes of PassiveEnemyShip class objects</summary>
     public class PassiveEnemyShip : EnemyShip
     {
+        #region Constructors
 
         /// <summary>Initializes a new instance of the <see cref="PassiveEnemyShip" /> class.</summary>
         /// <param name="level">The level.</param>
@@ -25,7 +25,9 @@ namespace SpaceInvaders.Model.Ships
                     break;
             }
 
-            SetSpeed(5,5);
+            SetSpeed(5, 5);
         }
+
+        #endregion
     }
 }

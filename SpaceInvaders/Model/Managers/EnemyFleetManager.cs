@@ -154,7 +154,7 @@ namespace SpaceInvaders.Model.Managers
 
         /// <summary>Removes the offscreen enemy bullets.</summary>
         /// <param name="height">The height.</param>
-        public void RemoveOffScreenEnemyBulletsBullets(double height)
+        public void RemoveOffScreenEnemyBullets(double height)
         {
             foreach (var bullet in this.findOffscreenBullets(height))
             {

@@ -31,9 +31,7 @@ namespace SpaceInvaders.Model.Ships
 
         #region Constructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="PlayerShip" /> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="PlayerShip" /> class.</summary>
         public PlayerShip()
         {
             Sprite = new PlayerShipSprite();
