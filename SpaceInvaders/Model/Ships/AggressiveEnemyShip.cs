@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.UI.Composition;
-using SpaceInvaders.View.Sprites;
+﻿using SpaceInvaders.View.Sprites;
 
-namespace SpaceInvaders.Model
+namespace SpaceInvaders.Model.Ships
 {
+
+    /// <summary>Describes the behavior and attributes of AggressiveEnemyShip class objects</summary>
     public class AggressiveEnemyShip : EnemyShip
     {
+
+        /// <summary>Initializes a new instance of the <see cref="AggressiveEnemyShip" /> class.</summary>
+        /// <param name="level">The enemy ship level.</param>
         public AggressiveEnemyShip(int level)
         {
             if (level == 1)
@@ -27,6 +26,9 @@ namespace SpaceInvaders.Model
             SetSpeed(5,5);
         }
 
+
+        /// <summary>Fires the bullet.</summary>
+        /// <returns>the bullet that was fired</returns>
         public EnemyBullet FireBullet()
         {
             return new EnemyBullet();

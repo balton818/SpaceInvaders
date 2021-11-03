@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SpaceInvaders.View.Sprites;
 
-namespace SpaceInvaders.Model
+namespace SpaceInvaders.Model.Ships
 {
     /// <summary>
     ///     Manages the player ship.
@@ -23,6 +23,8 @@ namespace SpaceInvaders.Model
         /// <value>The player bullets.</value>
         public IList<PlayerBullet> PlayerBullets { get; set; }
 
+        /// <summary>Gets or sets the remaining lives.</summary>
+        /// <value>The number of additional lives that the player has remaining.</value>
         public int LivesRemaining { get; set; }
 
         #endregion
@@ -39,7 +41,7 @@ namespace SpaceInvaders.Model
             this.PlayerBullets = new List<PlayerBullet>(1);
             this.LivesRemaining = 2;
         }
-        
+
         #endregion
 
         #region Methods
@@ -100,7 +102,7 @@ namespace SpaceInvaders.Model
             if (this.PlayerBullets.Count > 0)
             {
                 var lastBulletPosition = this.PlayerBullets[this.PlayerBullets.Count - 1].Y;
-                return this.Y - lastBulletPosition > this.PlayerBullets[this.PlayerBullets.Count - 1].Height;
+                return Y - lastBulletPosition > this.PlayerBullets[this.PlayerBullets.Count - 1].Height;
             }
 
             return true;
@@ -115,6 +117,7 @@ namespace SpaceInvaders.Model
             return bullet;
         }
 
+        /// <summary>Removes the offscreen player bullets.</summary>
         public void RemoveOffScreenPlayerBullets()
         {
             foreach (var bullet in this.findOffscreenBullets())

@@ -4,15 +4,13 @@ using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
-using SpaceInvaders.Model;
+using SpaceInvaders.Model.Managers;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
 namespace SpaceInvaders.View
 {
-    /// <summary>
-    ///     The main page for the game.
-    /// </summary>
+    /// <summary>The main page for the game.</summary>
     public sealed partial class MainPage
     {
         #region Data members
@@ -33,9 +31,7 @@ namespace SpaceInvaders.View
 
         #region Constructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="MainPage" /> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="MainPage" /> class.</summary>
         public MainPage()
         {
             this.InitializeComponent();

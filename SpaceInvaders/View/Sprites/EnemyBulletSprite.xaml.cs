@@ -3,7 +3,7 @@
 namespace SpaceInvaders.View.Sprites
 {
     /// <summary>Defines the behavior and fields of an EnemyBulletSprite object</summary>
-    public sealed partial class EnemyBulletSprite
+    public sealed partial class EnemyBulletSprite : BaseSprite
     {
         #region Constructors
 

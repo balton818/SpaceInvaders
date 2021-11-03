@@ -1,6 +1,4 @@
-﻿using Windows.Management.Deployment;
-
-namespace SpaceInvaders.Model
+﻿namespace SpaceInvaders.Model.Ships
 {
     /// <summary> Defines the data members and behavior for EnemyShip objects </summary>
     public abstract class EnemyShip : GameObject
@@ -11,6 +9,8 @@ namespace SpaceInvaders.Model
         /// <value>The point value.</value>
         public int PointValue { get; protected set; }
 
+        /// <summary>Gets or sets the enemy level.</summary>
+        /// <value>The enemy level.</value>
         public EnemyType EnemyLevel { get; protected set; }
 
         #endregion

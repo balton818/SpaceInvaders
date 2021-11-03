@@ -4,7 +4,7 @@
 namespace SpaceInvaders.View.Sprites
 {
     /// <summary> The Level2EnemySprite class </summary>
-    public sealed partial class Level2EnemySprite
+    public sealed partial class Level2EnemySprite : BaseSprite
     {
         #region Constructors
 

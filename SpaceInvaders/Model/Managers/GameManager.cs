@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Windows.Gaming.Input;
-using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using SpaceInvaders.View.Sprites;
-using SpaceInvaders.View.Sprites.ShipSprites;
+using SpaceInvaders.Model.Ships;
 
-namespace SpaceInvaders.Model
+namespace SpaceInvaders.Model.Managers
 {
     /// <summary>
     ///     Manages the entire game.
@@ -17,13 +12,19 @@ namespace SpaceInvaders.Model
     {
         #region Types and Delegates
 
+        /// <summary>the PlayerDeathHandler</summary>
         public delegate void PlayerDeathHandler();
 
+        /// <summary>the PlayerHitHandler</summary>
+        /// <param name="livesRemaining">The lives remaining.</param>
         public delegate void PlayerHitHandler(int livesRemaining);
 
-        public delegate void ScoreboardUpdateHandler(int score);
-
+        /// <summary>the PlayerWinHandler</summary>
         public delegate void PlayerWinHandler();
+
+        /// <summary>the ScoreboardUpdateHandler</summary>
+        /// <param name="score">The score.</param>
+        public delegate void ScoreboardUpdateHandler(int score);
 
         #endregion
 
@@ -35,32 +36,27 @@ namespace SpaceInvaders.Model
         private const int Row3YPosition = 125;
         private const int Row4YPosition = 175;
 
-        private const int NumberOfLevel1Enemies = 4;
-        private const int NumberOfLevel2Enemies = 4;
-        private const int NumberOfLevel3Enemies = 4;
-
         private readonly EnemyFleetManager enemyFleetManager;
-        private MovementAnimator animator;
+        private EnemyMovementAnimator animator;
 
         private DispatcherTimer gameTimer;
-        private int tickCounter;
-        
+
         private readonly double backgroundHeight;
         private readonly double backgroundWidth;
-        
+
         private PlayerShip playerShip;
         private Canvas background;
 
         #endregion
 
         #region Properties
-        
+
         /// <summary>
         ///     Gets or sets the user's score
         /// </summary>
         /// <value>The score.</value>
         public int Score { get; set; }
-        
+
         #endregion
 
         #region Constructors
@@ -84,7 +80,6 @@ namespace SpaceInvaders.Model
             }
 
             this.enemyFleetManager = new EnemyFleetManager();
-            
 
             this.Score = 0;
 
@@ -98,35 +93,45 @@ namespace SpaceInvaders.Model
 
         /// <summary>
         ///     Initializes the game placing player ship and enemy ship in the game.
-        ///     Precondition: background != null
+        ///     Precondition: gameBackground != null
         ///     Postcondition: Game is initialized and ready for play.
         /// </summary>
-        /// <param name="background">The background canvas.</param>
-        public void InitializeGame(Canvas background)
+        /// <param name="gameBackground">The gameBackground canvas.</param>
+        public void InitializeGame(Canvas gameBackground)
         {
-            this.background = background ?? throw new ArgumentNullException(nameof(background));
+            this.background = gameBackground ?? throw new ArgumentNullException(nameof(gameBackground));
 
             this.gameTimer = new DispatcherTimer();
             this.gameTimer.Tick += this.timerTick;
             this.gameTimer.Interval = new TimeSpan(0, 0, 0, 0, 20);
             this.gameTimer.Start();
 
-            this.animator = new MovementAnimator(this.background, this.enemyFleetManager.EnemyShips);
+            this.createNewAnimator();
 
             this.createAndPlacePlayerShip();
 
             this.placeAllEnemies();
-            this.showAllEnemies();
         }
 
+        private void createNewAnimator()
+        {
+            this.animator = new EnemyMovementAnimator(this.background, this.enemyFleetManager.EnemyShips);
+        }
+
+        /// <summary>Occurs when the score is updated</summary>
         public event ScoreboardUpdateHandler ScoreboardUpdated;
+
+        /// <summary>Occurs when the player is killed.</summary>
         public event PlayerDeathHandler PlayerKilled;
+
+        /// <summary>Occurs when the player has won.</summary>
         public event PlayerWinHandler PlayerWon;
+
+        /// <summary>Occurs when the player is hit by an enemy ship.</summary>
         public event PlayerHitHandler PlayerHit;
 
         private void timerTick(object sender, object e)
         {
-            this.tickCounter++;
             this.checkIfPlayerWasHit();
             this.enemyFleetManager.MoveEnemies();
             this.animateMovement();
@@ -238,8 +243,7 @@ namespace SpaceInvaders.Model
             }
         }
 
-        /// <summary>Fires the bullet if one has not already been fired.</summary>
-        /// <param name="background">The background.</param>
+        /// <summary>Fires the bullet if the player ship is able to</summary>
         public void FireBullet()
         {
             if (this.playerShip.CanFire() && this.gameTimer.IsEnabled)
@@ -303,7 +307,7 @@ namespace SpaceInvaders.Model
             this.Score += enemy.PointValue;
             this.ScoreboardUpdated?.Invoke(this.Score);
         }
-        
+
         private void showEnemyBullets()
         {
             var bullet = this.enemyFleetManager.EnemiesShoot();
@@ -313,7 +317,7 @@ namespace SpaceInvaders.Model
                 this.background.Children.Add(bullet.Sprite);
             }
         }
-        
+
         /// <summary>Moves all enemy bullets.</summary>
         private void moveAllEnemyBullets()
         {
@@ -328,7 +332,7 @@ namespace SpaceInvaders.Model
 
         private void checkIfPlayerWasHit()
         {
-            EnemyBullet bullet = this.enemyFleetManager.DetermineIfPlayerWasHit(this.playerShip);
+            var bullet = this.enemyFleetManager.DetermineIfPlayerWasHit(this.playerShip);
             if (bullet != null)
             {
                 if (this.playerShip.LivesRemaining <= 0)
@@ -358,26 +362,9 @@ namespace SpaceInvaders.Model
 
         private void animateMovement()
         {
-            //this.buildSecondFrames();
-            this.animator.animateObjects();
+            this.animator.AnimateEnemies();
         }
 
-        private void buildSecondFrames()
-        {
-            var enemiesToAnimate = from enemy in this.enemyFleetManager.EnemyShips
-                                   where enemy.EnemyLevel == EnemyType.Level2 || enemy.EnemyLevel == EnemyType.Level3 || enemy.EnemyLevel == EnemyType.Level4
-                                   select enemy;
-            foreach (var enemy in enemiesToAnimate.ToList())
-            {
-                EnemyShip frame2 = new PassiveEnemyShip(0);
-                frame2.X = enemy.X;
-                frame2.Y = enemy.Y;
-                
-                this.background.Children.Add(frame2.Sprite);
-                this.background.Children.Remove(enemy.Sprite);
-                this.background.Children.Add(enemy.Sprite);
-            }
-        }
         #endregion
     }
 }

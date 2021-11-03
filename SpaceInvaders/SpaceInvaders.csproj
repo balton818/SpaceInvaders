@@ -120,7 +120,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Model\MovementAnimator.cs" />
+    <Compile Include="Model\EnemyMovementAnimator.cs" />
     <Compile Include="Model\Ships\AggressiveEnemyShip.cs" />
     <Compile Include="Model\CollisionDetector.cs" />
     <Compile Include="Model\EnemyBullet.cs" />
@@ -136,32 +136,29 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="View\Sprites\ShipSprites\BaseSprite.xaml.cs">
+    <Compile Include="View\Sprites\BaseSprite.xaml.cs">
       <DependentUpon>BaseSprite.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Sprites\EnemyBulletSprite.xaml.cs">
       <DependentUpon>EnemyBulletSprite.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Sprites\ShipSprites\EnemyShipFrame2Sprite.xaml.cs">
-      <DependentUpon>EnemyShipFrame2Sprite.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Sprites\ShipSprites\Level4EnemyShipSprite.xaml.cs">
+    <Compile Include="View\Sprites\Level4EnemyShipSprite.xaml.cs">
       <DependentUpon>Level4EnemyShipSprite.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Sprites\PlayerBulletSprite.xaml.cs">
       <DependentUpon>PlayerBulletSprite.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Sprites\ISpriteRender.cs" />
-    <Compile Include="View\Sprites\ShipSprites\Level1EnemyShipSprite.xaml.cs">
+    <Compile Include="View\Sprites\Level1EnemyShipSprite.xaml.cs">
       <DependentUpon>Level1EnemyShipSprite.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Sprites\ShipSprites\Level2EnemyShipSprite.xaml.cs">
+    <Compile Include="View\Sprites\Level2EnemyShipSprite.xaml.cs">
       <DependentUpon>Level2EnemyShipSprite.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Sprites\ShipSprites\Level3EnemyShipSprite.xaml.cs">
+    <Compile Include="View\Sprites\Level3EnemyShipSprite.xaml.cs">
       <DependentUpon>Level3EnemyShipSprite.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Sprites\ShipSprites\PlayerShipSprite.xaml.cs">
+    <Compile Include="View\Sprites\PlayerShipSprite.xaml.cs">
       <DependentUpon>PlayerShipSprite.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
@@ -190,7 +187,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Sprites\ShipSprites\BaseSprite.xaml">
+    <Page Include="View\Sprites\BaseSprite.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -198,11 +195,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Sprites\ShipSprites\EnemyShipFrame2Sprite.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Sprites\ShipSprites\Level4EnemyShipSprite.xaml">
+    <Page Include="View\Sprites\Level4EnemyShipSprite.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -210,19 +203,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Sprites\ShipSprites\Level1EnemyShipSprite.xaml">
+    <Page Include="View\Sprites\Level1EnemyShipSprite.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Sprites\ShipSprites\Level2EnemyShipSprite.xaml">
+    <Page Include="View\Sprites\Level2EnemyShipSprite.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Sprites\ShipSprites\Level3EnemyShipSprite.xaml">
+    <Page Include="View\Sprites\Level3EnemyShipSprite.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Sprites\ShipSprites\PlayerShipSprite.xaml">
+    <Page Include="View\Sprites\PlayerShipSprite.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

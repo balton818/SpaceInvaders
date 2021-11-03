@@ -1,29 +1,30 @@
-﻿using System.ComponentModel.Design;
-using SpaceInvaders.View.Sprites;
-using SpaceInvaders.View.Sprites.ShipSprites;
+﻿using SpaceInvaders.View.Sprites;
 
-namespace SpaceInvaders.Model
+namespace SpaceInvaders.Model.Ships
 {
+
+    /// <summary>Defines the behavior and attributes of PassiveEnemyShip class objects</summary>
     public class PassiveEnemyShip : EnemyShip
     {
+
+        /// <summary>Initializes a new instance of the <see cref="PassiveEnemyShip" /> class.</summary>
+        /// <param name="level">The level.</param>
         public PassiveEnemyShip(int level)
         {
-            if (level == 0)
+            switch (level)
             {
-                Sprite = new EnemyShipFrame2Sprite();
+                case 1:
+                    Sprite = new Level1EnemySprite();
+                    SetPoints(1);
+                    EnemyLevel = EnemyType.Level1;
+                    break;
+                case 2:
+                    Sprite = new Level2EnemySprite();
+                    SetPoints(5);
+                    EnemyLevel = EnemyType.Level2;
+                    break;
             }
-            else if (level == 1)
-            {
-                Sprite = new Level1EnemySprite();
-                SetPoints(1);
-                EnemyLevel = EnemyType.Level1;
-            }
-            else if (level == 2)
-            {
-                Sprite = new Level2EnemySprite();
-                SetPoints(5);
-                EnemyLevel = EnemyType.Level2;
-            }
+
             SetSpeed(5,5);
         }
     }
